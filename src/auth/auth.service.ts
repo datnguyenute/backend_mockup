@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { response, Response } from 'express';
 import ms from 'ms';
 import { IUser } from 'src/users/users.interface';
 import { UsersService } from 'src/users/users.service';
@@ -110,5 +110,11 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException(`Refresh token không hợp lệ. Vui lòng login.`);
     }
+  };
+
+  logout = async (response: Response, user: IUser) => {
+    await this.usersService.updateUserToken('', user._id);
+    response.clearCookie('refresh_token');
+    return 'ok';
   };
 }

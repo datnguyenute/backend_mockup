@@ -40,4 +40,9 @@ export class AuthController {
     console.log(refreshToken);
     return this.authService.processNewToken(refreshToken, response);
   }
+
+  @Post('logout')
+  async handleLogout(@Res({ passthrough: true }) response: Response, @User() user: IUser) {
+    return await this.authService.logout(response, user);
+  }
 }
