@@ -24,7 +24,6 @@ export class AccountsService {
       balance: balance,
       createdBy: { _id, email },
     });
-    console.log(user);
 
     return {
       _id: newAccount?._id,

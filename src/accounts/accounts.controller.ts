@@ -15,7 +15,7 @@ export class AccountsController {
     return this.accountsService.create(createNewAccountDto, user);
   }
 
-  @Post('by-user')
+  @Get('by-user')
   @ResponseMessage('Get account by User')
   getResumesByUser(@User() user: IUser) {
     return this.accountsService.findByUsers(user);
