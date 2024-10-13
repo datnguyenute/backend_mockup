@@ -1,9 +1,11 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { Public } from 'src/decorator/customize';
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
+import { Request, Response } from 'express';
+import { IUser } from 'src/users/users.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -14,8 +16,8 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Req() req, @Res({ passthrough: true }) response: Response) {
+    return this.authService.login(req.user, response);
   }
 
   // Register
@@ -23,5 +25,19 @@ export class AuthController {
   @Post('register')
   async register(@Body() req: RegisterUserDto) {
     return this.userService.register(req);
+  }
+
+  @Get('account')
+  handleGetAccount(@User() user: IUser) {
+    return { user };
+  }
+
+  @Public()
+  @ResponseMessage('Get User by refresh token')
+  @Get('refresh')
+  handleRefreshToken(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
+    const refreshToken = request.cookies['refresh_token'];
+    console.log(refreshToken);
+    return this.authService.processNewToken(refreshToken, response);
   }
 }
