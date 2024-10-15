@@ -14,6 +14,12 @@ export class Transaction {
   @Prop()
   date: Date;
 
+  @Prop({ required: true })
+  category: string;
+
+  @Prop()
+  description: string;
+
   @Prop({ type: Object })
   createdBy: {
     _id: mongoose.Schema.Types.ObjectId;
@@ -44,5 +50,4 @@ export class Transaction {
   @Prop()
   deletedAt: Date;
 }
-
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);

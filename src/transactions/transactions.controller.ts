@@ -28,8 +28,15 @@ export class TransactionsController {
 
   @Patch(':id')
   @ResponseMessage('Update balance transaction')
-  update(@Param('id') id: string, @Body('date') date: Date, @Body('amount') amount: number, @User() user: IUser) {
-    return this.transactionsService.update(id, date, amount, user);
+  update(
+    @Param('id') id: string,
+    @Body('date') date: Date,
+    @Body('amount') amount: number,
+    @Body('category') category: string,
+    @Body('description') description: string,
+    @User() user: IUser,
+  ) {
+    return this.transactionsService.update(id, date, amount, category, description, user);
   }
 
   @Delete(':id')

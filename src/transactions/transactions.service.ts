@@ -15,13 +15,15 @@ export class TransactionsService {
   ) {}
 
   async create(newTransaction: CreateNewTransactionDto, user: IUser) {
-    const { amount, date } = newTransaction;
+    const { amount, date, category, description } = newTransaction;
     const { email, _id } = user;
 
     const newTrans = await this.transactionModel.create({
       userId: _id,
-      amount: amount,
-      date: date,
+      category,
+      description,
+      date,
+      amount,
       createdBy: { _id, email },
     });
 
@@ -47,7 +49,7 @@ export class TransactionsService {
     return await this.transactionModel.findById(id);
   }
 
-  async update(_id: string, date: Date, amount: number, user: IUser) {
+  async update(_id: string, date: Date, amount: number, category: string, description: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
       throw new BadRequestException('not found account');
     }
@@ -57,6 +59,8 @@ export class TransactionsService {
       {
         date,
         amount,
+        category,
+        description,
         updatedBy: {
           _id: user._id,
           email: user.email,

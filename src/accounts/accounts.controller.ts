@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
-import { CreateAccountDto, CreateNewAccountDto } from './dto/create-account.dto';
+import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
@@ -11,7 +11,7 @@ export class AccountsController {
 
   @Post()
   @ResponseMessage('Create a new account')
-  create(@Body() createNewAccountDto: CreateNewAccountDto, @User() user: IUser) {
+  create(@Body() createNewAccountDto: CreateAccountDto, @User() user: IUser) {
     return this.accountsService.create(createNewAccountDto, user);
   }
 
@@ -29,8 +29,8 @@ export class AccountsController {
 
   @Patch(':id')
   @ResponseMessage('Update balance account')
-  update(@Param('id') id: string, @Body('balance') balance: number, @User() user: IUser) {
-    return this.accountsService.update(id, balance, user);
+  update(@Param('id') id: string, @Body() updateAccountDto: UpdateAccountDto, @User() user: IUser) {
+    return this.accountsService.update(id, updateAccountDto, user);
   }
 
   @Delete(':id')

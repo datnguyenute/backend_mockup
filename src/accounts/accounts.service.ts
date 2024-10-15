@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateAccountDto, CreateNewAccountDto } from './dto/create-account.dto';
+import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { IUser } from 'src/users/users.interface';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,7 +14,7 @@ export class AccountsService {
     private accountModel: SoftDeleteModel<AccountDocument>,
   ) {}
 
-  async create(createNewAccountDto: CreateNewAccountDto, user: IUser) {
+  async create(createNewAccountDto: CreateAccountDto, user: IUser) {
     const { balance, name } = createNewAccountDto;
     const { email, _id } = user;
 
@@ -47,15 +47,18 @@ export class AccountsService {
       .sort('-createdAt');
   }
 
-  async update(_id: string, balance: number, user: IUser) {
+  async update(_id: string, updateAccount: UpdateAccountDto, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
       throw new BadRequestException('not found account');
     }
+
+    const { balance, name } = updateAccount;
 
     const updated = await this.accountModel.updateOne(
       { _id },
       {
         balance,
+        name,
         updatedBy: {
           _id: user._id,
           email: user.email,
