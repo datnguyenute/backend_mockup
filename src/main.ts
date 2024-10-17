@@ -16,6 +16,17 @@ async function bootstrap() {
   //config cookies
   app.use(cookieParser());
 
+  // CORS
+  app.enableCors(
+    {
+      "origin": true,
+      "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+      "preflightContinue": false,
+      credentials: true
+    }
+  );
+
+
   const configService = app.get<ConfigService>(ConfigService);
   const port = configService.get('PORT');
   await app.listen(port);
