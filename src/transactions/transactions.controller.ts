@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateNewTransactionDto, CreateTransactionDto } from './dto/create-transaction.dto';
 import { ResponseMessage, User } from 'src/decorator/customize';
@@ -8,6 +8,12 @@ import { IUser } from 'src/users/users.interface';
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
+  @Get()
+  @ResponseMessage('Fetch all transactions')
+  findAll(@Query('current') currentPage: string, @Query('pageSize') limit: string, @Query() qs: string) {
+    return this.transactionsService.findAll(+currentPage, +limit, qs);
+  }
+
   @Post()
   @ResponseMessage('Create a new transaction')
   create(@Body() createNewTransactionDto: CreateNewTransactionDto, @User() user: IUser) {
@@ -16,8 +22,8 @@ export class TransactionsController {
 
   @Get('by-user')
   @ResponseMessage('Get transaction by User')
-  getResumesByUser(@User() user: IUser) {
-    return this.transactionsService.findByUsers(user);
+  findAllByUser(@Query('current') currentPage: string, @Query('pageSize') limit: string, @Query() qs: string, @User() user: IUser) {
+    return this.transactionsService.findAllByUser(+currentPage, +limit, qs, user);
   }
 
   @Get(':id')

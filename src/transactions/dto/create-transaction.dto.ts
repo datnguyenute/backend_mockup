@@ -22,5 +22,8 @@ export class CreateNewTransactionDto {
   @IsNotEmpty({ message: 'category không được để trống' })
   category: string;
 
+  @IsNotEmpty({ message: 'type không được để trống' })
+  type: string;
+
   description: string;
 }

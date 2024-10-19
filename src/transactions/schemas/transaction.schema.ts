@@ -17,6 +17,9 @@ export class Transaction {
   @Prop({ required: true })
   category: string;
 
+  @Prop({ required: true })
+  type: string;
+
   @Prop()
   description: string;
 

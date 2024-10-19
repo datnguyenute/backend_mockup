@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Transaction, TransactionDocument } from './schemas/transaction.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
+import aqp from 'api-query-params';
 import mongoose from 'mongoose';
 
 @Injectable()
@@ -14,13 +15,76 @@ export class TransactionsService {
     private transactionModel: SoftDeleteModel<TransactionDocument>,
   ) {}
 
+  async findAll(currentPage: number, limit: number, qs: string) {
+    const { filter, sort, projection } = aqp(qs);
+    delete filter.current;
+    delete filter.pageSize;
+
+    let offset = (+currentPage - 1) * +limit;
+    let defaultLimit = +limit ? +limit : 10;
+
+    const totalItems = (await this.transactionModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const result = await this.transactionModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort as any)
+      .exec();
+
+    return {
+      meta: {
+        current: currentPage,
+        pageSize: limit,
+        pages: totalPages,
+        total: totalItems,
+      },
+      result,
+    };
+  }
+
+  async findAllByUser(currentPage: number, limit: number, qs: string, user: IUser) {
+    const { filter, sort, projection } = aqp(qs);
+    delete filter.current;
+    delete filter.pageSize;
+
+    // Filter by user
+    filter.userId = user._id;
+
+
+    let offset = (+currentPage - 1) * +limit;
+    let defaultLimit = +limit ? +limit : 10;
+
+    const totalItems = (await this.transactionModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const result = await this.transactionModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort as any)
+      .exec();
+
+    return {
+      meta: {
+        current: currentPage,
+        pageSize: limit,
+        pages: totalPages,
+        total: totalItems,
+      },
+      result,
+    };
+  }
+
   async create(newTransaction: CreateNewTransactionDto, user: IUser) {
-    const { amount, date, category, description } = newTransaction;
+    const { amount, date, category, description, type } = newTransaction;
     const { email, _id } = user;
 
     const newTrans = await this.transactionModel.create({
       userId: _id,
       category,
+      type,
       description,
       date,
       amount,
