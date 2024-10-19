@@ -25,5 +25,6 @@ export class CreateNewTransactionDto {
   @IsNotEmpty({ message: 'type không được để trống' })
   type: string;
 
+  @IsNotEmpty({ message: 'description không được để trống' })
   description: string;
 }
