@@ -8,6 +8,9 @@ export class Transaction {
   @Prop()
   userId: mongoose.Schema.Types.ObjectId;
 
+  @Prop()
+  accountId: mongoose.Schema.Types.ObjectId;
+
   @Prop({ required: true })
   amount: number;
 

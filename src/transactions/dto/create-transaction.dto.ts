@@ -27,4 +27,7 @@ export class CreateNewTransactionDto {
 
   @IsNotEmpty({ message: 'description không được để trống' })
   description: string;
+
+  @IsNotEmpty({ message: 'account không được để trống' })
+  accountId: string;
 }

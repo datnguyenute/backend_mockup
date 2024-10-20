@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateNewTransactionDto, CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { CreateNewTransactionDto } from './dto/create-transaction.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Transaction, TransactionDocument } from './schemas/transaction.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
@@ -52,19 +51,13 @@ export class TransactionsService {
     // Filter by user
     filter.userId = user._id;
 
-
     let offset = (+currentPage - 1) * +limit;
     let defaultLimit = +limit ? +limit : 10;
 
     const totalItems = (await this.transactionModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
-    const result = await this.transactionModel
-      .find(filter)
-      .skip(offset)
-      .limit(defaultLimit)
-      .sort(sort as any)
-      .exec();
+    const result = await this.transactionModel.find(filter).skip(offset).limit(defaultLimit).sort('-updatedAt').exec();
 
     return {
       meta: {
@@ -78,11 +71,12 @@ export class TransactionsService {
   }
 
   async create(newTransaction: CreateNewTransactionDto, user: IUser) {
-    const { amount, date, category, description, type } = newTransaction;
+    const { amount, date, category, description, type, accountId } = newTransaction;
     const { email, _id } = user;
 
     const newTrans = await this.transactionModel.create({
       userId: _id,
+      accountId,
       category,
       type,
       description,

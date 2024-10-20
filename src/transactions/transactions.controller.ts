@@ -46,7 +46,7 @@ export class TransactionsController {
   }
 
   @Delete(':id')
-  @ResponseMessage('Delete a resume by id')
+  @ResponseMessage('Delete a transaction by id')
   remove(@Param('id') id: string, @User() user: IUser) {
     return this.transactionsService.remove(id, user);
   }
