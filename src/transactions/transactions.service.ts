@@ -6,12 +6,14 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @InjectModel(Transaction.name)
     private transactionModel: SoftDeleteModel<TransactionDocument>,
+    private accountService: AccountsService,
   ) {}
 
   async findAll(currentPage: number, limit: number, qs: string) {
@@ -74,6 +76,9 @@ export class TransactionsService {
     const { amount, date, category, description, type, accountId } = newTransaction;
     const { email, _id } = user;
 
+    // TODO: Check balance
+
+
     const newTrans = await this.transactionModel.create({
       userId: _id,
       accountId,
@@ -85,9 +90,13 @@ export class TransactionsService {
       createdBy: { _id, email },
     });
 
+    // Update account
+    const responseUpdate = await this.accountService.updateBalanceByTransaction(newTransaction, user);
+
     return {
       _id: newTrans?._id,
       createdAt: newTrans?.createdAt,
+      responseUpdate,
     };
   }
 

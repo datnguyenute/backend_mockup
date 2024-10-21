@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Account, AccountDocument } from './schemas/account.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import mongoose from 'mongoose';
+import { CreateNewTransactionDto } from 'src/transactions/dto/create-transaction.dto';
 
 @Injectable()
 export class AccountsService {
@@ -45,6 +46,42 @@ export class AccountsService {
         userId: user._id,
       })
       .sort('-createdAt');
+  }
+
+  async updateAccount(_id: string, balance: number, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      throw new BadRequestException('not found account');
+    }
+
+    const updated = await this.accountModel.updateOne(
+      { _id },
+      {
+        balance,
+        updatedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
+
+    return updated;
+  }
+
+  async updateBalanceByTransaction(createNewTransactionDto: CreateNewTransactionDto, user: IUser) {
+    const { accountId, type, amount } = createNewTransactionDto;
+    const currentAccount = await this.findOne(accountId);
+    let balance = currentAccount?.balance;
+    console.log('>>> currentBalance: ', balance);
+    if (type === 'Income') {
+      balance = balance + Number(amount);
+    } else if (type === 'Expense') {
+      balance = balance - Number(amount);
+    }
+    console.log('>>> newBalance: ', balance);
+
+    const update = await this.updateAccount(accountId, balance, user);
+
+    return update;
   }
 
   async update(_id: string, updateAccount: UpdateAccountDto, user: IUser) {

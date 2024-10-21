@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
-import { CreateNewTransactionDto, CreateTransactionDto } from './dto/create-transaction.dto';
+import { CreateNewTransactionDto } from './dto/create-transaction.dto';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 
@@ -22,7 +22,12 @@ export class TransactionsController {
 
   @Get('by-user')
   @ResponseMessage('Get transaction by User')
-  findAllByUser(@Query('current') currentPage: string, @Query('pageSize') limit: string, @Query() qs: string, @User() user: IUser) {
+  findAllByUser(
+    @Query('current') currentPage: string,
+    @Query('pageSize') limit: string,
+    @Query() qs: string,
+    @User() user: IUser,
+  ) {
     return this.transactionsService.findAllByUser(+currentPage, +limit, qs, user);
   }
 
