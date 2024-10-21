@@ -23,6 +23,7 @@ export class AuthController {
 
   // Register
   @Public()
+  @ResponseMessage('User register')
   @Post('register')
   async register(@Body() req: RegisterUserDto) {
     return this.userService.register(req);

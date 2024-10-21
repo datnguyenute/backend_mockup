@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,17 +12,35 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>) {}
 
   async create(createUserDto: CreateUserDto) {
+    const { name, email, password } = createUserDto;
+    // Check email exist
+
+    //add logic check email
+    const isExist = await this.userModel.findOne({ email });
+    if (isExist) {
+      throw new BadRequestException(`Email: ${email} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác.`);
+    }
+
     // Hash password
-    const passwordHash = this.hashPassword(createUserDto.password);
+    const passwordHash = this.hashPassword(password);
     const createdUser = await this.userModel.create({
-      name: createUserDto.name,
-      email: createUserDto.email,
+      name: name,
+      email: email,
       password: passwordHash,
     });
     return createdUser;
   }
 
   async register(registerUserDto: RegisterUserDto) {
+    const { name, email, password } = registerUserDto;
+    // Check email registerUserDto
+
+    //add logic check email
+    const isExist = await this.userModel.findOne({ email });
+    if (isExist) {
+      throw new BadRequestException(`Email: ${email} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác.`);
+    }
+
     // Hash password
     const passwordHash = this.hashPassword(registerUserDto.password);
     const createdUser = await this.userModel.create({
