@@ -72,12 +72,30 @@ export class TransactionsService {
     };
   }
 
+  async findAllWithQuery(from: string, to: string, qs: string, user: IUser) {
+    const { filter, sort, projection } = aqp(qs);
+    delete filter.from;
+    delete filter.to;
+
+    // Filter by user
+    filter.userId = user._id;
+
+    // Filter by date
+    filter.updatedAt = {
+      $gte: new Date(from),
+      $lt: new Date(to),
+    };
+
+    const result = await this.transactionModel.find(filter).sort('-updatedAt').exec();
+
+    return result;
+  }
+
   async create(newTransaction: CreateNewTransactionDto, user: IUser) {
     const { amount, date, category, description, type, accountId } = newTransaction;
     const { email, _id } = user;
 
     // TODO: Check balance
-
 
     const newTrans = await this.transactionModel.create({
       userId: _id,
