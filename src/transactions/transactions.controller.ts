@@ -37,6 +37,17 @@ export class TransactionsController {
     return this.transactionsService.findAllWithQuery(from, to, qs, user);
   }
 
+  @Get('for-report')
+  @ResponseMessage('Get transaction for report')
+  findAllForReport(
+    @Query('from') from: string,
+    @Query('to') to: string,
+    @Query('type') type: number,
+    @User() user: IUser,
+  ) {
+    return this.transactionsService.findAllForReport(from, to, +type, user);
+  }
+
   @Get(':id')
   @ResponseMessage('Fetch a transaction by id')
   findOne(@Param('id') id: string) {
