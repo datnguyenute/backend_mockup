@@ -95,7 +95,7 @@ let TransactionsService = class TransactionsService {
             return (0, dayjs_1.default)(date).format('MM/DD');
         }
     }
-    async findAllForReport(from, to, type, user) {
+    async findAllForReport(from, to, type, asset, user) {
         let startDate;
         let endDate = new Date();
         switch (type) {
@@ -129,7 +129,11 @@ let TransactionsService = class TransactionsService {
         const filter = {
             userId: user._id,
             date: { $gte: startDate, $lte: endDate },
+            accountId: asset,
         };
+        if (asset === '') {
+            delete filter.accountId;
+        }
         const transactions = await this.transactionModel.find(filter).exec();
         const transactionHistory = transactions.slice(0, 5);
         let income = { totalAmount: 0, totalTransaction: 0 };
@@ -178,7 +182,7 @@ let TransactionsService = class TransactionsService {
         const response = {
             balanceFlow: { income, expense },
             statistics,
-            transactionHistory
+            transactionHistory,
         };
         return response;
     }

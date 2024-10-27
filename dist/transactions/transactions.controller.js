@@ -33,8 +33,8 @@ let TransactionsController = class TransactionsController {
     findAllWithQuery(from, to, qs, user) {
         return this.transactionsService.findAllWithQuery(from, to, qs, user);
     }
-    findAllForReport(from, to, type, user) {
-        return this.transactionsService.findAllForReport(from, to, +type, user);
+    findAllForReport(from, to, type, asset, user) {
+        return this.transactionsService.findAllForReport(from, to, +type, asset, user);
     }
     findOne(id) {
         return this.transactionsService.findOne(id);
@@ -94,9 +94,10 @@ __decorate([
     __param(0, (0, common_1.Query)('from')),
     __param(1, (0, common_1.Query)('to')),
     __param(2, (0, common_1.Query)('type')),
-    __param(3, (0, customize_1.User)()),
+    __param(3, (0, common_1.Query)('asset')),
+    __param(4, (0, customize_1.User)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Number, Object]),
+    __metadata("design:paramtypes", [String, String, Number, String, Object]),
     __metadata("design:returntype", void 0)
 ], TransactionsController.prototype, "findAllForReport", null);
 __decorate([

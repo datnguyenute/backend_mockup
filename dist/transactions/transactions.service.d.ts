@@ -59,7 +59,7 @@ export declare class TransactionsService {
         _id: mongoose.Types.ObjectId;
     }>)[]>;
     private formatLabel;
-    findAllForReport(from: string, to: string, type: number, user: IUser): Promise<IResponseReport>;
+    findAllForReport(from: string, to: string, type: number, asset: string, user: IUser): Promise<IResponseReport>;
     create(newTransaction: CreateNewTransactionDto, user: IUser): Promise<{
         _id: mongoose.Types.ObjectId;
         createdAt: Date;

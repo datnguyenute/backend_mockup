@@ -58,7 +58,7 @@ export declare class TransactionsController {
     } & Required<{
         _id: import("mongoose").Types.ObjectId;
     }>)[]>;
-    findAllForReport(from: string, to: string, type: number, user: IUser): Promise<import("./transactions.interface").IResponseReport>;
+    findAllForReport(from: string, to: string, type: number, asset: string, user: IUser): Promise<import("./transactions.interface").IResponseReport>;
     findOne(id: string): Promise<import("mongoose").Document<unknown, {}, import("mongoose").Document<unknown, {}, import("./schemas/transaction.schema").Transaction> & import("./schemas/transaction.schema").Transaction & {
         _id: import("mongoose").Types.ObjectId;
     } & {
