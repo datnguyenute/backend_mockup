@@ -117,7 +117,7 @@ export class TransactionsService {
    * @param user current user
    * @returns ResponseReport
    */
-  async findAllForReport(from: string, to: string, type: number, user: IUser) {
+  async findAllForReport(from: string, to: string, type: number, asset: string, user: IUser) {
     let startDate: Date;
     let endDate: Date = new Date();
 
@@ -159,7 +159,13 @@ export class TransactionsService {
     const filter = {
       userId: user._id,
       date: { $gte: startDate, $lte: endDate },
+      accountId: asset,
     };
+
+    // Query with asset
+    if (asset === '') {
+      delete filter.accountId;
+    }
 
     // Fetch all transactions
     const transactions = await this.transactionModel.find(filter).exec();
@@ -228,7 +234,7 @@ export class TransactionsService {
     const response: IResponseReport = {
       balanceFlow: { income, expense },
       statistics,
-      transactionHistory
+      transactionHistory,
     };
 
     return response;
