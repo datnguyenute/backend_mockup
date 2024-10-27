@@ -43,9 +43,10 @@ export class TransactionsController {
     @Query('from') from: string,
     @Query('to') to: string,
     @Query('type') type: number,
+    @Query('asset') asset: string,
     @User() user: IUser,
   ) {
-    return this.transactionsService.findAllForReport(from, to, +type, user);
+    return this.transactionsService.findAllForReport(from, to, +type, asset, user);
   }
 
   @Get(':id')
