@@ -23,3 +23,15 @@ export class RegisterUserDto {
   @IsNotEmpty()
   name: string;
 }
+
+export class CreateUserSocialDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
+  type: string;
+}
