@@ -5,6 +5,7 @@ export declare class User {
     email: string;
     password: string;
     refreshToken: string;
+    type: string;
     createdBy: {
         _id: mongoose.Schema.Types.ObjectId;
         email: string;

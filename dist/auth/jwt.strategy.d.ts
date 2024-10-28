@@ -9,6 +9,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
         _id: string;
         name: string;
         email: string;
+        type: string;
     }>;
 }
 export {};

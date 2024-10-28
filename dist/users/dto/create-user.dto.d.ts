@@ -8,3 +8,8 @@ export declare class RegisterUserDto {
     password: string;
     name: string;
 }
+export declare class CreateUserSocialDto {
+    email: string;
+    name: string;
+    type: string;
+}

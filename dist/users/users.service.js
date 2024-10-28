@@ -49,6 +49,15 @@ let UsersService = class UsersService {
         });
         return createdUser;
     }
+    async createUserSocial(createUserSocialDto) {
+        const { name, email, type } = createUserSocialDto;
+        const createdUser = await this.userModel.create({
+            name: name,
+            email: email,
+            type: type,
+        });
+        return createdUser;
+    }
     async register(registerUserDto) {
         const { name, email, password } = registerUserDto;
         const isExist = await this.userModel.findOne({ email });

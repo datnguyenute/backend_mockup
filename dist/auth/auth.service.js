@@ -36,13 +36,14 @@ let AuthService = class AuthService {
                 });
                 let user = await this.usersService.findUserByToken(refreshToken);
                 if (user) {
-                    const { _id, name, email } = user;
+                    const { _id, name, email, type } = user;
                     const payload = {
                         sub: 'token refresh',
                         iss: 'from server',
                         _id,
                         name,
                         email,
+                        type,
                     };
                     const refresh_token = this.createRefreshToken(payload);
                     await this.usersService.updateUserToken(refresh_token, _id.toString());
@@ -57,6 +58,7 @@ let AuthService = class AuthService {
                             _id,
                             name,
                             email,
+                            type,
                         },
                     };
                 }
@@ -85,7 +87,7 @@ let AuthService = class AuthService {
         return null;
     }
     async login(user, response) {
-        const { _id, email, name } = user;
+        const { _id, email, name, type } = user;
         const payload = {
             sub: 'token login',
             iss: 'from server',
@@ -106,6 +108,46 @@ let AuthService = class AuthService {
                 _id,
                 name,
                 email,
+                type,
+            },
+        };
+    }
+    async loginSocial(loginSocial, response) {
+        const typeSocial = loginSocial.type;
+        const emailSocial = loginSocial.email;
+        let user = await this.usersService.findOneByUsername(emailSocial);
+        if (user) {
+            const typeExist = user.type;
+            if (typeSocial !== typeExist) {
+                throw new common_1.BadRequestException(`Email: ${emailSocial} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác.`);
+            }
+        }
+        else {
+            user = await this.usersService.createUserSocial(loginSocial);
+        }
+        const { email, name, type, _id } = user;
+        const payload = {
+            sub: 'social login',
+            iss: 'from server',
+            _id,
+            name,
+            email,
+            type,
+        };
+        const refreshToken = this.createRefreshToken(payload);
+        await this.usersService.updateUserToken(refreshToken, _id.toString());
+        response.cookie('refresh_token', refreshToken, {
+            httpOnly: true,
+            maxAge: (0, ms_1.default)(this.configService.get('JWT_REFRESH_TOKEN_EXPIRE')),
+        });
+        return {
+            access_token: this.jwtService.sign(payload),
+            refresh_token: refreshToken,
+            user: {
+                _id,
+                name,
+                email,
+                type,
             },
         };
     }

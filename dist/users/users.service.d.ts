@@ -1,4 +1,4 @@
-import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
+import { CreateUserDto, CreateUserSocialDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import mongoose from 'mongoose';
@@ -7,6 +7,17 @@ export declare class UsersService {
     private userModel;
     constructor(userModel: SoftDeleteModel<UserDocument>);
     create(createUserDto: CreateUserDto): Promise<mongoose.Document<unknown, {}, mongoose.Document<unknown, {}, User> & User & {
+        _id: mongoose.Types.ObjectId;
+    } & {
+        __v?: number;
+    }> & mongoose.Document<unknown, {}, User> & User & {
+        _id: mongoose.Types.ObjectId;
+    } & {
+        __v?: number;
+    } & Required<{
+        _id: mongoose.Types.ObjectId;
+    }>>;
+    createUserSocial(createUserSocialDto: CreateUserSocialDto): Promise<mongoose.Document<unknown, {}, mongoose.Document<unknown, {}, User> & User & {
         _id: mongoose.Types.ObjectId;
     } & {
         __v?: number;
