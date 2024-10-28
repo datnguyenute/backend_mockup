@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { response, Response } from 'express';
 import ms from 'ms';
+import { CreateUserSocialDto } from 'src/users/dto/create-user.dto';
 import { IUser } from 'src/users/users.interface';
 import { UsersService } from 'src/users/users.service';
 
@@ -27,7 +28,7 @@ export class AuthService {
   }
 
   async login(user: IUser, response: Response) {
-    const { _id, email, name } = user;
+    const { _id, email, name, type } = user;
     const payload = {
       sub: 'token login',
       iss: 'from server',
@@ -55,6 +56,58 @@ export class AuthService {
         _id,
         name,
         email,
+        type,
+      },
+    };
+  }
+
+  async loginSocial(loginSocial: CreateUserSocialDto, response: Response) {
+    const typeSocial = loginSocial.type;
+    const emailSocial = loginSocial.email;
+
+    // Check exist email
+    let user = await this.usersService.findOneByUsername(emailSocial);
+    // Check type
+    if (user) {
+      const typeExist = user.type;
+      if (typeSocial !== typeExist) {
+        throw new BadRequestException(`Email: ${emailSocial} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác.`);
+      }
+    } else {
+      // New login with social
+      user = await this.usersService.createUserSocial(loginSocial);
+    }
+
+    const { email, name, type, _id } = user;
+
+    const payload = {
+      sub: 'social login',
+      iss: 'from server',
+      _id,
+      name,
+      email,
+      type,
+    };
+
+    const refreshToken = this.createRefreshToken(payload);
+
+    // Update user with token
+    await this.usersService.updateUserToken(refreshToken, _id.toString());
+
+    // Set refresh token to cookie
+    response.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      maxAge: ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE')),
+    });
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: refreshToken,
+      user: {
+        _id,
+        name,
+        email,
+        type,
       },
     };
   }
@@ -75,13 +128,14 @@ export class AuthService {
       let user = await this.usersService.findUserByToken(refreshToken);
 
       if (user) {
-        const { _id, name, email } = user;
+        const { _id, name, email, type } = user;
         const payload = {
           sub: 'token refresh',
           iss: 'from server',
           _id,
           name,
           email,
+          type,
         };
 
         const refresh_token = this.createRefreshToken(payload);
@@ -103,6 +157,7 @@ export class AuthService {
             _id,
             name,
             email,
+            type,
           },
         };
       } else {

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
-import { RegisterUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserSocialDto, RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { Request, Response } from 'express';
 import { IUser } from 'src/users/users.interface';
@@ -27,6 +27,13 @@ export class AuthController {
   @Post('register')
   async register(@Body() req: RegisterUserDto) {
     return this.userService.register(req);
+  }
+
+  @Public()
+  @Post('social-media')
+  @ResponseMessage('User social-media login')
+  async loginSocial(@Body() createUserSocialDto: CreateUserSocialDto, @Res({ passthrough: true }) response: Response) {
+    return this.authService.loginSocial(createUserSocialDto, response);
   }
 
   @Get('account')

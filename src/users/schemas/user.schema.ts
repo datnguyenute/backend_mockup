@@ -11,11 +11,14 @@ export class User {
   @Prop({ required: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop()
   password: string;
 
   @Prop()
   refreshToken: string;
+
+  @Prop()
+  type: string;
 
   @Prop({ type: Object })
   createdBy: {
